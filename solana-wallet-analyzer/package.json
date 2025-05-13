@@ -1,0 +1,22 @@
+{
+  "name": "solana-wallet-analyzer",
+  "version": "1.0.0",
+  "description": "A tool that analyzes Solana wallet transactions to identify related addresses",
+  "main": "get_related_wallets.js",
+  "type": "module",
+  "scripts": {
+    "start": "node get_related_wallets.js"
+  },
+  "keywords": [
+    "solana",
+    "wallet",
+    "analysis",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@solana/web3.js": "^1.98.2",
+    "dotenv": "^16.5.0"
+  }
+} 
