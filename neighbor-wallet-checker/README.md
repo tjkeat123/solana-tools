@@ -1,4 +1,4 @@
-# Solana Related Wallets Analyzer
+# Neighbor Wallet Checker
 
 A command-line tool that analyzes Solana wallet transactions to identify related addresses, track sent/received patterns, categorize transaction types, and provide detailed summaries with configurable history depth.
 
@@ -16,7 +16,7 @@ Clone this repository or download the source code:
 
 ```
 git clone https://github.com/tjkeat123/solana-tools.git
-cd solana-tools/solana-wallet-analyzer
+cd solana-tools/neighbor-wallet-checker
 ```
 
 Install dependencies:

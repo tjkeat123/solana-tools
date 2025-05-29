@@ -222,7 +222,7 @@ async function main() {
 
     // Prepare a set to collect related addresses
     // Use a Map to track addresses and their transaction directions
-    const relatedAddressMap = new Map(); // address -> {sent: count, received: count}
+    const relatedAddressMap = new Map(); // address -> {sent: {count: number, amount: number}, received: {count: number, amount: number}}
     const parsedTransactions = shouldLog ? [] : null; // Only collect transactions if logging
     
     console.log(`\nAnalyzing transactions for address: ${address.toString()}`);
@@ -274,12 +274,21 @@ async function main() {
         
         // Add any found related addresses to our map with direction info
         txInfo.relatedAddresses.forEach(addrInfo => {
-            const addrData = relatedAddressMap.get(addrInfo.address) || { sent: 0, received: 0 };
+            const addrData = relatedAddressMap.get(addrInfo.address) || { 
+                sent: { count: 0, amount: 0 }, 
+                received: { count: 0, amount: 0 } 
+            };
             
             if (addrInfo.direction === 'sent') {
-                addrData.sent++;
+                addrData.sent.count++;
+                if (txInfo.type === 'transfer' && txInfo.details.amount) {
+                    addrData.sent.amount += txInfo.details.amount;
+                }
             } else if (addrInfo.direction === 'received') {
-                addrData.received++;
+                addrData.received.count++;
+                if (txInfo.type === 'transfer' && txInfo.details.amount) {
+                    addrData.received.amount += txInfo.details.amount;
+                }
             }
             
             relatedAddressMap.set(addrInfo.address, addrData);
@@ -317,10 +326,14 @@ async function main() {
     if (relatedAddressMap.size > 0) {
         console.log('\nSummary of related addresses:');
         console.log("==================================================");
-        for (const [addr, counts] of relatedAddressMap.entries()) {
+        for (const [addr, data] of relatedAddressMap.entries()) {
             const directionInfo = [];
-            if (counts.sent > 0) directionInfo.push(`Sent: ${counts.sent}`);
-            if (counts.received > 0) directionInfo.push(`Received: ${counts.received}`);
+            if (data.sent.count > 0) {
+                directionInfo.push(`Sent: ${data.sent.count} tx (${data.sent.amount.toFixed(4)} SOL)`);
+            }
+            if (data.received.count > 0) {
+                directionInfo.push(`Received: ${data.received.count} tx (${data.received.amount.toFixed(4)} SOL)`);
+            }
             console.log(`- ${addr} (${directionInfo.join(', ')})`);
         }
     } else {

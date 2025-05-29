@@ -1,5 +1,5 @@
 {
-  "name": "solana-wallet-analyzer",
+  "name": "neighbor-wallet-checker",
   "version": "1.0.0",
   "description": "A tool that analyzes Solana wallet transactions to identify related addresses",
   "main": "get_related_wallets.js",
