@@ -58,7 +58,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`API request failed: ${response.status} ${response.statusText}${errorData.error ? ` - ${errorData.error}` : ''}`);
       }
 
       const data = await response.json();
