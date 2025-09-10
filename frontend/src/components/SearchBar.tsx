@@ -76,10 +76,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onSearch(trimmedQuery);
       }
 
-      console.log('Search results:', data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to search');
-      console.error('Search error:', err);
     } finally {
       setIsLoading(false);
     }
