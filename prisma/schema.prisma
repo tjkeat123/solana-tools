@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  address              String    @id @db.VarChar(44)
+  label                String?   @db.VarChar(255)
+  balanceSol           Decimal?  @db.Decimal(20, 9)
+  firstTransactionAt   DateTime?
+  lastAnalyzedAt       DateTime?
+  firstFoundAt         DateTime  @default(now())
+  lastUpdatedAt        DateTime  @updatedAt
+
+  // Relations
+  analysisCache        WalletAnalysisCache?
+  sentTransactions     Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+  sourceRelationships  WalletRelationship[] @relation("SourceWallet")
+  targetRelationships  WalletRelationship[] @relation("TargetWallet")
+  labels               WalletLabel[]
+
+  @@map("wallets")
+}
+
+model WalletAnalysisCache {
+  walletAddress    String   @id @db.VarChar(44)
+  lastSignature    String?  @db.VarChar(88)
+  transactionCount Int      @default(0)
+  analyzedAt       DateTime @default(now())
+
+  // Relations
+  wallet Wallet @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+
+  @@map("wallet_analysis_cache")
+}
+
+model Transaction {
+  signature         String    @id @db.VarChar(88)
+  blockTime         DateTime?
+  transactionType   String    @db.VarChar(50)
+  sourceAddress     String?   @db.VarChar(44)
+  destinationAddress String?  @db.VarChar(44)
+  amountSol         Decimal?  @db.Decimal(20, 9)
+  rawData           Json?     // Store full transaction data when needed
+  createdAt         DateTime  @default(now())
+
+  // Relations
+  sourceWallet      Wallet? @relation("SentTransactions", fields: [sourceAddress], references: [address])
+  destinationWallet Wallet? @relation("ReceivedTransactions", fields: [destinationAddress], references: [address])
+
+  @@index([sourceAddress])
+  @@index([destinationAddress])
+  @@index([blockTime])
+  @@index([transactionType])
+  @@map("transactions")
+}
+
+model WalletRelationship {
+  sourceWallet       String   @db.VarChar(44)
+  targetWallet       String   @db.VarChar(44)
+  sentCount          Int      @default(0)
+  receivedCount      Int      @default(0)
+  totalSentSol       Decimal  @default(0) @db.Decimal(20, 9)
+  totalReceivedSol   Decimal  @default(0) @db.Decimal(20, 9)
+  firstInteraction   DateTime?
+  lastInteraction    DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  source Wallet @relation("SourceWallet", fields: [sourceWallet], references: [address], onDelete: Cascade)
+  target Wallet @relation("TargetWallet", fields: [targetWallet], references: [address], onDelete: Cascade)
+
+  @@id([sourceWallet, targetWallet])
+  @@index([sourceWallet])
+  @@index([targetWallet])
+  @@index([lastInteraction])
+  @@map("wallet_relationships")
+}
+
+model WalletLabel {
+  id          Int      @id @default(autoincrement())
+  walletAddress String @db.VarChar(44)
+  label       String   @db.VarChar(255)
+  category    String?  @db.VarChar(100) // e.g., "exchange", "defi", "personal", "suspicious"
+  // confidence  Float?   @db.Real // 0.0 to 1.0 confidence score
+  source      String?  @db.VarChar(100) // How this label was determined
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  wallet Wallet @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+
+  @@unique([walletAddress, label])
+  @@index([category])
+  @@index([walletAddress])
+  @@map("wallet_labels")
+}
+
+// model ApiUsageLog {
+//   id            Int      @id @default(autoincrement())
+//   walletAddress String   @db.VarChar(44)
+//   endpoint      String   @db.VarChar(100) // e.g., "getSignaturesForAddress", "getParsedTransaction"
+//   requestCount  Int      @default(1)
+//   timestamp     DateTime @default(now())
+  
+//   @@index([walletAddress])
+//   @@index([timestamp])
+//   @@index([endpoint])
+//   @@map("api_usage_log")
+// }
