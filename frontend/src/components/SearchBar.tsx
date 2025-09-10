@@ -12,6 +12,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Basic validation for wallet addresses and SNS domains
   const validateInput = (input: string): boolean => {
@@ -45,6 +46,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
 
     setError(null);
+    setSuccessMessage(null);
     setIsLoading(true);
 
     try {
@@ -64,6 +66,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
       const data = await response.json();
       
+      // Display success message if available
+      if (data.success && data.message) {
+        setSuccessMessage(data.message);
+      }
+      
       // Call the optional onSearch callback
       if (onSearch) {
         onSearch(trimmedQuery);
@@ -80,9 +87,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    // Clear error when user starts typing
+    // Clear error and success messages when user starts typing
     if (error) {
       setError(null);
+    }
+    if (successMessage) {
+      setSuccessMessage(null);
     }
   };
 
@@ -134,11 +144,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
            </div>
          </form>
          
-         {/* Reserved space for error message - prevents layout shift */}
+         {/* Reserved space for messages - prevents layout shift */}
          <div className="mt-2 min-h-[2.5rem]">
            {error ? (
              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
                {error}
+             </div>
+           ) : successMessage ? (
+             <div className="text-sm text-green-600 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+               {successMessage}
              </div>
            ) : (
              <div className="text-xs text-gray-500">
