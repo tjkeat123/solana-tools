@@ -1,8 +1,4 @@
 # Solana Tools
 
-Look forward to make this a Swiss Army knife for tracking Solana wallet 
+> If you just need this for once and don't want the hassle to set up, just use [neighbor-wallet-check](neighbor-wallet-check/).
 
-## Tools
-| Tool | Purpose | Repository |
-| --- | --- | --- |
-| Neighbor Wallet Checker | Find transactions to neighboring wallets | [neighbor-wallet-checker](neighbor-wallet-checker/) |
