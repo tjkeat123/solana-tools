@@ -95,8 +95,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl flex flex-col">
+    <div className="w-full flex flex-col">
                  <form onSubmit={handleSubmit} className="relative">
            <div className="relative">
              <input
@@ -159,7 +158,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
            )}
          </div>
 
-      </div>
     </div>
   );
 };
