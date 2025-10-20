@@ -1,6 +1,6 @@
 # Solana Tracer
 
-> If you just need this for once and don't want the hassle to set up, just use [neighbor-wallet-check](neighbor-wallet-check/).
+> If you just need this for once and don't want the hassle to set up, just use [neighbor-wallet-checker](neighbor-wallet-checker/).
 
 ## Tech Stack
 
